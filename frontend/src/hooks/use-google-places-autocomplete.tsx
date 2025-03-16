@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { loadGoogleMapsScript } from "@/lib/google-maps";
+import { debounce } from "lodash";
 
 export function useGooglePlacesAutocomplete(countryCode = "") {
   const [predictions, setPredictions] = useState<
@@ -47,8 +48,8 @@ export function useGooglePlacesAutocomplete(countryCode = "") {
   }, []);
 
   // Function to fetch predictions based on input
-  const fetchPredictions = useCallback(
-    async (input: string) => {
+  const debouncedFetchPredictions = useCallback(
+    debounce(async (input: string) => {
       if (!autocompleteService || !sessionToken || input.length < 3) {
         return;
       }
@@ -91,7 +92,7 @@ export function useGooglePlacesAutocomplete(countryCode = "") {
         setPredictions([]);
         setLoading(false);
       }
-    },
+    }, 300),
     [autocompleteService, sessionToken, countryCode]
   );
 
@@ -103,7 +104,7 @@ export function useGooglePlacesAutocomplete(countryCode = "") {
   return {
     predictions,
     loading,
-    fetchPredictions,
+    fetchPredictions: debouncedFetchPredictions,
     clearPredictions,
   };
 }

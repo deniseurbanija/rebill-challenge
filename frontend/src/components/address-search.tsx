@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Check, Info, Search } from "lucide-react";
 import {
   Select,
@@ -35,10 +35,16 @@ export function AddressSearch({
   const [sameAsShipping, setSameAsShipping] = useState(false);
   const [touched, setTouched] = useState(false);
   const [manualEntry, setManualEntry] = useState(false);
-  const [countries, setCountries] =
-    useState<FormattedCountry[]>(fallbackCountries);
   const [isLoadingCountries, setIsLoadingCountries] = useState(true);
+  const [fetchedCountries, setFetchedCountries] = useState<FormattedCountry[]>(
+    []
+  );
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const countries = useMemo(
+    () => (isLoadingCountries ? fallbackCountries : fetchedCountries),
+    [isLoadingCountries, fetchedCountries]
+  );
 
   const { predictions, fetchPredictions, clearPredictions } =
     useGooglePlacesAutocomplete(country);
@@ -49,7 +55,7 @@ export function AddressSearch({
       setIsLoadingCountries(true);
       try {
         const countriesData = await getCountries();
-        setCountries(countriesData);
+        setFetchedCountries(countriesData);
       } catch (error) {
         console.error("Error fetching countries:", error);
       } finally {
@@ -154,9 +160,7 @@ export function AddressSearch({
           <SelectContent>
             {countries.map((country) => (
               <SelectItem key={country.code} value={country.code}>
-                {country.flag
-                  ? `${country.flag} ${country.name}`
-                  : country.name}
+                {country.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -174,15 +178,15 @@ export function AddressSearch({
               className="pr-10"
               onFocus={() => setTouched(true)}
             />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 opacity-50 text-muted-foreground" />
           </div>
 
           {predictions.length > 0 && !manualEntry && (
-            <div className="absolute z-10 w-full mt-1 bg-background border rounded-md shadow-lg max-h-60 overflow-auto">
+            <div className="absolute z-10 w-full mt-1 bg-background border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
               {predictions.map((prediction) => (
                 <div
                   key={prediction.place_id}
-                  className="px-4 py-2 hover:bg-muted cursor-pointer flex items-center justify-between"
+                  className="px-3 py-3 bg-white hover:bg-gray-100 cursor-pointer text-sm flex items-center justify-between"
                   onClick={() => handleAddressSelect(prediction)}
                 >
                   <span>{prediction.description}</span>
@@ -198,7 +202,7 @@ export function AddressSearch({
         {!manualEntry && (
           <Button
             variant="link"
-            className="p-0 h-auto text-sm text-primary"
+            className="p-0 h-auto text-sm text-[#3B4049]"
             onClick={handleManualEntry}
             disabled={sameAsShipping}
           >
@@ -207,7 +211,7 @@ export function AddressSearch({
         )}
 
         {!isValid && touched && !sameAsShipping && (
-          <p className="text-sm text-destructive">
+          <p className="text-sm text-destructive text-red-800">
             Please select a country and address
           </p>
         )}
