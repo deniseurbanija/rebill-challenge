@@ -41,7 +41,7 @@ export class AddressService {
         throw new NotFoundException(`Address with ID ${id} not found.`);
       }
     } catch (error) {
-      throw error; // Let NestJS handle known errors
+      throw error; // NestJS handle known errors
     }
   }
 }
