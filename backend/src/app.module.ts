@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Address } from './entities/Address';
+import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Address } from './entities/Address';
         synchronize: true,
       }),
     }),
+    AddressModule,
   ],
   controllers: [],
   providers: [],
