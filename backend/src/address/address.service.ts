@@ -1,4 +1,10 @@
-import { Injectable } from '@nestjs/common';
+/* eslint-disable no-useless-catch */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Address } from 'src/entities/Address';
@@ -11,16 +17,31 @@ export class AddressService {
     private readonly addressRepository: Repository<Address>,
   ) {}
 
-  create(addressDto: CreateAddressDto) {
-    const address = this.addressRepository.create(addressDto);
-    return this.addressRepository.save(address);
+  async createAddress(createAddressDto: CreateAddressDto): Promise<Address> {
+    try {
+      const address = this.addressRepository.create(createAddressDto);
+      return await this.addressRepository.save(address);
+    } catch (error) {
+      throw new InternalServerErrorException('Error saving the address.');
+    }
   }
 
-  findAll() {
-    return this.addressRepository.find();
+  async getAddresses(): Promise<Address[]> {
+    try {
+      return await this.addressRepository.find();
+    } catch (error) {
+      throw new InternalServerErrorException('Error retrieving addresses.');
+    }
   }
 
-  async remove(id: number) {
-    await this.addressRepository.delete(id);
+  async deleteAddress(id: string): Promise<void> {
+    try {
+      const result = await this.addressRepository.delete(id);
+      if (result.affected === 0) {
+        throw new NotFoundException(`Address with ID ${id} not found.`);
+      }
+    } catch (error) {
+      throw error; // Let NestJS handle known errors
+    }
   }
 }
