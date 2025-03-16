@@ -2,8 +2,8 @@
 
 import type React from "react";
 
-import { useState, useEffect, useRef, useMemo } from "react";
-import { Check, Info, Search } from "lucide-react";
+import { useState, useRef } from "react";
+import { Check, Info } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -15,13 +15,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import {
-  fallbackCountries,
-  getCountries,
-  type FormattedCountry,
-} from "@/lib/countries";
 import { useGooglePlacesAutocomplete } from "@/hooks/use-google-places-autocomplete";
 import type { AddressSearchProps } from "@/types/address";
+import { countriesData } from "@/data/countries-data";
+
+export interface FormattedCountry {
+  name: string;
+  code: string;
+}
 
 export function AddressSearch({
   title = "Billing address",
@@ -35,36 +36,19 @@ export function AddressSearch({
   const [sameAsShipping, setSameAsShipping] = useState(false);
   const [touched, setTouched] = useState(false);
   const [manualEntry, setManualEntry] = useState(false);
-  const [isLoadingCountries, setIsLoadingCountries] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [fetchedCountries, setFetchedCountries] = useState<FormattedCountry[]>(
     []
   );
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const countries = useMemo(
-    () => (isLoadingCountries ? fallbackCountries : fetchedCountries),
-    [isLoadingCountries, fetchedCountries]
-  );
+  const countries = countriesData.map(({ country, isoCountryCode }) => ({
+    name: country,
+    code: isoCountryCode, // Asegurar que es string
+  }));
 
   const { predictions, fetchPredictions, clearPredictions } =
     useGooglePlacesAutocomplete(country);
-
-  // Fetch countries on component mount
-  useEffect(() => {
-    const fetchCountriesData = async () => {
-      setIsLoadingCountries(true);
-      try {
-        const countriesData = await getCountries();
-        setFetchedCountries(countriesData);
-      } catch (error) {
-        console.error("Error fetching countries:", error);
-      } finally {
-        setIsLoadingCountries(false);
-      }
-    };
-
-    fetchCountriesData();
-  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -145,17 +129,12 @@ export function AddressSearch({
 
       <div className="space-y-4">
         <Select
-          disabled={sameAsShipping || isLoadingCountries}
           value={country}
           onValueChange={handleCountryChange}
           onOpenChange={() => setTouched(true)}
         >
           <SelectTrigger className="w-full">
-            <SelectValue
-              placeholder={
-                isLoadingCountries ? "Loading countries..." : "Select country"
-              }
-            />
+            <SelectValue placeholder="Select country" />
           </SelectTrigger>
           <SelectContent>
             {countries.map((country) => (
@@ -175,10 +154,19 @@ export function AddressSearch({
               value={address}
               onChange={handleInputChange}
               disabled={sameAsShipping || !country}
-              className="pr-10"
+              className={cn(
+                "pr-10",
+                !isValid && touched && !sameAsShipping && "border-red-500"
+              )}
               onFocus={() => setTouched(true)}
             />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 opacity-50 text-muted-foreground" />
+            <div className="relative">
+              {!isValid && touched && !sameAsShipping && (
+                <p className="absolute mt-1 text-sm text-red-500">
+                  Please select a country and address
+                </p>
+              )}
+            </div>
           </div>
 
           {predictions.length > 0 && !manualEntry && (
@@ -202,20 +190,17 @@ export function AddressSearch({
         {!manualEntry && (
           <Button
             variant="link"
-            className="p-0 h-auto text-sm text-[#3B4049]"
+            className="p-0 h-auto mt-4 text-sm text-[#3B4049]"
             onClick={handleManualEntry}
             disabled={sameAsShipping}
           >
             Enter address manually
           </Button>
         )}
-
-        {!isValid && touched && !sameAsShipping && (
-          <p className="text-sm text-destructive text-red-800">
-            Please select a country and address
-          </p>
-        )}
       </div>
+      <button className="flex p-2 w-full font-semibold cursor-pointer  text-sm justify-center bg-[#0E121B] border rounded-lg text-white hover:text-gray-200">
+        Save changes
+      </button>
     </div>
   );
 }
