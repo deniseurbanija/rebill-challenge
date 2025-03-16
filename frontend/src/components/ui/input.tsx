@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface SearchInputProps
@@ -10,7 +9,7 @@ export interface SearchInputProps
 }
 
 const Input = React.forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ className, onSearch, ...props }, ref) => {
+  ({ className, ...props }, ref) => {
     return (
       <div className="relative w-full">
         <input
@@ -22,13 +21,6 @@ const Input = React.forwardRef<HTMLInputElement, SearchInputProps>(
           ref={ref}
           {...props}
         />
-        <button
-          type="button"
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          onClick={onSearch}
-        >
-          <Search className="h-4 w-4" />
-        </button>
       </div>
     );
   }

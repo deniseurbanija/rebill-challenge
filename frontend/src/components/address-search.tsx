@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState, useRef } from "react";
-import { Check, Info } from "lucide-react";
+import { Check, Info, Search } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -160,6 +160,12 @@ export function AddressSearch({
               )}
               onFocus={() => setTouched(true)}
             />
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <Search className="h-4 w-4" />
+            </button>
             <div className="relative">
               {!isValid && touched && !sameAsShipping && (
                 <p className="absolute mt-1 text-sm text-red-500">
@@ -198,9 +204,10 @@ export function AddressSearch({
           </Button>
         )}
       </div>
-      <button className="flex p-2 w-full font-semibold cursor-pointer  text-sm justify-center bg-[#0E121B] border rounded-lg text-white hover:text-gray-200">
-        Save changes
-      </button>
+      <Button
+        type="submit"
+        className="w-full bg-black hover:bg-gray-800 text-white rounded-md h-9 mt-6"
+      ></Button>
     </div>
   );
 }
