@@ -46,13 +46,14 @@ export default function AddressForm({
 
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [moreDetails, setMoreDetails] = useState(false);
   const [countryValidation, setCountryValidation] = useState(
     getCountryValidation(formData.country)
   );
 
   const countries = countriesData.map(({ country, isoCountryCode }) => ({
     name: country,
-    code: isoCountryCode, // Asegurar que es string
+    code: isoCountryCode,
   }));
 
   // Update validation rules when country changes
@@ -104,7 +105,6 @@ export default function AddressForm({
 
     // Clear errors
     setErrors({});
-
     // Submit form
     setIsSubmitting(true);
 
@@ -154,7 +154,6 @@ export default function AddressForm({
 
       <div className="space-y-4">
         <Select
-          disabled={formData.sameAsShipping}
           value={formData.country}
           onValueChange={(value) => handleSelectChange("country", value)}
         >
@@ -177,7 +176,6 @@ export default function AddressForm({
             value={formData.street}
             placeholder="Address street*"
             onChange={handleInputChange}
-            disabled={formData.sameAsShipping}
             className={cn(
               "mt-1",
               errors.street &&
@@ -196,7 +194,6 @@ export default function AddressForm({
             value={formData.city}
             placeholder="City*"
             onChange={handleInputChange}
-            disabled={formData.sameAsShipping}
             className={cn(
               "mt-1",
               errors.city &&
@@ -212,7 +209,6 @@ export default function AddressForm({
           {countryValidation.hasStates ? (
             <div>
               <Select
-                disabled={formData.sameAsShipping}
                 value={formData.state}
                 onValueChange={(value) => handleSelectChange("state", value)}
               >
@@ -248,7 +244,6 @@ export default function AddressForm({
                 name="state"
                 value={formData.state}
                 onChange={handleInputChange}
-                disabled={formData.sameAsShipping}
                 className={cn(
                   "mt-1",
                   errors.state &&
@@ -268,7 +263,6 @@ export default function AddressForm({
               value={formData.zipCode}
               placeholder="Zip code*"
               onChange={handleInputChange}
-              disabled={formData.sameAsShipping}
               className={cn(
                 "mt-1",
                 errors.zipCode &&
@@ -282,25 +276,25 @@ export default function AddressForm({
         </div>
 
         <div>
-          <label htmlFor="apartment" className="text-sm text-gray-500">
-            Apartment, Unit, Floor (optional)
-          </label>
-          <Input
-            id="apartment"
-            name="apartment"
-            value={formData.apartment}
-            onChange={handleInputChange}
-            disabled={formData.sameAsShipping}
-            className="mt-1"
-          />
+          {moreDetails ? (
+            <Input
+              id="apartment"
+              name="apartment"
+              value={formData.apartment}
+              placeholder="Apartment, Unit, Floor (optional)"
+              onChange={handleInputChange}
+              className="mt-1"
+            />
+          ) : (
+            <Button variant="link" onClick={() => setMoreDetails(true)}>
+              + Add additional information
+            </Button>
+          )}
         </div>
 
         <Button
           type="submit"
-          disabled={
-            isSubmitting ||
-            (Object.keys(errors).length > 0 && !formData.sameAsShipping)
-          }
+          disabled={isSubmitting || Object.keys(errors).length > 0}
           className="w-full bg-black hover:bg-gray-800 text-white rounded-md h-9 mt-6"
         >
           {isSubmitting ? "Saving..." : "Save changes"}

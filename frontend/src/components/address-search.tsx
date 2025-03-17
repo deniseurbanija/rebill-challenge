@@ -18,11 +18,7 @@ import { cn } from "@/lib/utils";
 import { useGooglePlacesAutocomplete } from "@/hooks/use-google-places-autocomplete";
 import type { AddressSearchProps } from "@/types/address";
 import { countriesData } from "@/data/countries-data";
-
-export interface FormattedCountry {
-  name: string;
-  code: string;
-}
+import { FormattedCountry } from "@/types/country";
 
 export function AddressSearch({
   title = "Billing address",
@@ -36,16 +32,15 @@ export function AddressSearch({
   const [sameAsShipping, setSameAsShipping] = useState(false);
   const [touched, setTouched] = useState(false);
   const [manualEntry, setManualEntry] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [fetchedCountries, setFetchedCountries] = useState<FormattedCountry[]>(
-    []
-  );
+
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const countries = countriesData.map(({ country, isoCountryCode }) => ({
-    name: country,
-    code: isoCountryCode, // Asegurar que es string
-  }));
+  const countries = countriesData.map(
+    ({ country, isoCountryCode }): FormattedCountry => ({
+      name: country,
+      code: isoCountryCode,
+    })
+  );
 
   const { predictions, fetchPredictions, clearPredictions } =
     useGooglePlacesAutocomplete(country);
@@ -153,7 +148,6 @@ export function AddressSearch({
               placeholder="Search address"
               value={address}
               onChange={handleInputChange}
-              disabled={sameAsShipping || !country}
               className={cn(
                 "pr-10",
                 !isValid && touched && !sameAsShipping && "border-red-500"
@@ -198,7 +192,6 @@ export function AddressSearch({
             variant="link"
             className="p-0 h-auto mt-4 text-sm text-[#3B4049]"
             onClick={handleManualEntry}
-            disabled={sameAsShipping}
           >
             Enter address manually
           </Button>
