@@ -23,6 +23,8 @@ import type {
 } from "@/types/address";
 import { countriesData } from "@/data/countries-data";
 import { AddressFormHeader } from "@/components/address-form-header";
+import { useAppSelector, useAppDispatch } from "@/redux/hooks";
+import { resetFormFilled } from "@/redux/addressSlice";
 
 export default function AddressForm({
   title = "Billing address",
@@ -42,6 +44,28 @@ export default function AddressForm({
     extraInfo: initialAddress?.extraInfo || "",
     sameAsShipping: initialAddress?.sameAsShipping || false,
   });
+
+  const dispatch = useAppDispatch();
+  const { selectedAddress } = useAppSelector((state) => state.address);
+
+  // Auto-rellenar el formulario cuando se selecciona una dirección
+  useEffect(() => {
+    if (selectedAddress) {
+      // Pequeño retraso para que la animación sea visible después de cerrar el selector
+      const timer = setTimeout(() => {
+        setFormData({
+          country: selectedAddress.country,
+          street: selectedAddress.street || "",
+          state: selectedAddress.state || "",
+          city: selectedAddress.city || "",
+          zipCode: selectedAddress.zipCode || "",
+        });
+        dispatch(resetFormFilled());
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }
+  }, [selectedAddress, dispatch]);
 
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [moreDetails, setMoreDetails] = useState(!!initialAddress?.extraInfo);

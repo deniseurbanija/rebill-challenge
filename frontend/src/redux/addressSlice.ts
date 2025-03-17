@@ -3,21 +3,11 @@ import {
   createAsyncThunk,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-
-export interface Address {
-  id: string;
-  street: string;
-  number: string;
-  city: string;
-  country: string;
-  postalCode?: string;
-  label?: string;
-  isDefault?: boolean;
-}
+import { AddressData } from "@/types/address";
 
 interface AddressState {
-  addresses: Address[];
-  selectedAddress: Address | null;
+  addresses: AddressData[];
+  selectedAddress: AddressData | null;
   isLoading: boolean;
   error: string | null;
   showAddressSelector: boolean;
@@ -54,7 +44,7 @@ const addressSlice = createSlice({
   name: "address",
   initialState,
   reducers: {
-    selectAddress: (state, action: PayloadAction<Address>) => {
+    selectAddress: (state, action: PayloadAction<AddressData>) => {
       state.selectedAddress = action.payload;
       state.showAddressSelector = false;
       state.formFilled = true; // Indicar que el formulario debe ser rellenado
@@ -77,7 +67,7 @@ const addressSlice = createSlice({
       })
       .addCase(
         fetchAddresses.fulfilled,
-        (state, action: PayloadAction<Address[]>) => {
+        (state, action: PayloadAction<AddressData[]>) => {
           state.isLoading = false;
           state.addresses = action.payload;
         }

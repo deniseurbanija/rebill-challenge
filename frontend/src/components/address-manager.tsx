@@ -174,6 +174,15 @@ export default function AddressManager({
     }
   };
 
+  const handleSameAsShippingChange = (newSameAsShipping: boolean) => {
+    setSameAsShipping(newSameAsShipping);
+    if (newSameAsShipping) {
+      setShowShippingSearch(false);
+    } else {
+      setShowShippingSearch(true);
+    }
+  };
+
   return (
     <div className={cn("w-full space-y-6", className)}>
       {/* Sección de facturación */}
@@ -184,6 +193,7 @@ export default function AddressManager({
             showSameAsShipping={true}
             onAddressSelect={handleBillingAddressSelect}
             onManualEntry={handleBillingManualEntry}
+            onSameAsShippingChange={handleSameAsShippingChange}
             sameAsShipping={sameAsShipping}
           />
         ) : (
@@ -192,6 +202,7 @@ export default function AddressManager({
             showSameAsShipping={true}
             initialAddress={billingAddress}
             onSave={handleBillingFormSave}
+            onSameAsShippingChange={handleSameAsShippingChange}
             isSubmitting={isSubmitting}
           />
         )}

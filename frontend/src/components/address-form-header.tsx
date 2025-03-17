@@ -14,6 +14,12 @@ export function AddressFormHeader({
   sameAsShipping,
   onSameAsShippingChange,
 }: AddressFormHeaderProps) {
+  const handleChange = (checked: boolean) => {
+    if (onSameAsShippingChange) {
+      onSameAsShippingChange(checked);
+    }
+  };
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-1">
@@ -25,12 +31,13 @@ export function AddressFormHeader({
           <Checkbox
             id="sameAsShipping"
             checked={sameAsShipping}
-            onCheckedChange={onSameAsShippingChange}
+            onCheckedChange={handleChange}
             className="h-4 w-4 border-[#EBEDEF] data-[state=checked]:bg-blue-600"
           />
           <label
             htmlFor="sameAsShipping"
             className="text-sm text-[#3B4049] cursor-pointer"
+            onClick={() => handleChange(!sameAsShipping)}
           >
             Same as shipping
           </label>

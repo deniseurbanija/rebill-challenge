@@ -29,6 +29,26 @@ export class AddressService {
         JSON.stringify(addressData.billingAddress) ===
           JSON.stringify(addressData.shippingAddress));
 
+    // Verificar si ya existe una dirección idéntica
+    const existingAddress = await this.addressRepository.findOne({
+      where: [
+        {
+          street: addressData.billingAddress.street,
+          city: addressData.billingAddress.city,
+          state: addressData.billingAddress.state,
+          zipCode: addressData.billingAddress.zipCode,
+          country: addressData.billingAddress.country,
+        },
+      ],
+    });
+
+    if (existingAddress) {
+      return {
+        billingAddress: existingAddress,
+        shippingAddress: areAddressesIdentical ? existingAddress : null,
+      };
+    }
+
     if (areAddressesIdentical) {
       // Si son idénticas, guarda solo una dirección con tipo combinado
       const combinedAddress = this.addressRepository.create({
