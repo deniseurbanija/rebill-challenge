@@ -23,6 +23,7 @@ import type {
 } from "@/types/address";
 import { countriesData } from "@/data/countries-data";
 import { AddressFormHeader } from "@/components/address-form-header";
+import { toast } from "sonner";
 
 export default function AddressForm({
   title = "Billing address",
@@ -111,6 +112,7 @@ export default function AddressForm({
     if (onSave) {
       await onSave(formData);
     }
+    toast("Event has been created.");
   };
 
   return (
