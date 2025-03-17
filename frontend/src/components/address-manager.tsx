@@ -32,11 +32,11 @@ export default function AddressManager({
   initialShippingAddress,
   className,
 }: AddressManagerProps) {
-  // Estado para controlar qué se muestra (búsqueda o formulario manual)
+  // states that show which components are shown
   const [showBillingSearch, setShowBillingSearch] = useState(true);
   const [showShippingSearch, setShowShippingSearch] = useState(true);
 
-  // Estado para almacenar datos de direcciones
+  // states to storage the addresses
   const [billingAddress, setBillingAddress] = useState<AddressData>(
     initialBillingAddress || {
       country: "",
@@ -55,46 +55,99 @@ export default function AddressManager({
     initialBillingAddress?.sameAsShipping !== false
   );
 
-  // Estado para controlar si estamos en proceso de guardado
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Efecto para actualizar los estados cuando cambia sameAsShipping
+  // updates states when sameAsShipping changes
   useEffect(() => {
     if (sameAsShipping) {
-      // Si son iguales, ocultamos la sección de envío
+      // hides shipping search if the address is the same as billing
       setShowShippingSearch(false);
-    } else if (!showShippingSearch) {
-      // Si acabamos de desmarcar la opción, mostramos la búsqueda de envío
-      setShowShippingSearch(true);
     }
-  }, [sameAsShipping, showShippingSearch]);
+  }, [sameAsShipping]);
 
-  // Función para convertir dirección de Google a AddressData
-  const parseGoogleAddress = (
+  // convert Google addresses to AddressData
+  const parseGoogleAddress = async (
     googleAddress: string,
     placeId: string,
     country: string
-  ): AddressData => {
-    // Esta función debería parsear la dirección de Google Places
-    // y extraer street, city, state, zipCode
-    // Lo ideal sería usar el placeId para obtener los detalles completos de la dirección
+  ): Promise<AddressData> => {
+    try {
+      const service = new google.maps.places.PlacesService(
+        document.createElement("div")
+      );
 
-    // Este es un ejemplo simplificado. En producción, deberías usar la API de Google Places para obtener detalles
-    const parts = googleAddress.split(",").map((part) => part.trim());
+      return new Promise((resolve, reject) => {
+        service.getDetails(
+          {
+            placeId,
+            fields: [
+              "address_components",
+              "formatted_address",
+              "name",
+              "place_id",
+            ],
+          },
+          (place, status) => {
+            if (
+              status !== google.maps.places.PlacesServiceStatus.OK ||
+              !place?.address_components
+            ) {
+              reject(
+                new Error("No se pudieron obtener los detalles de la dirección")
+              );
+              return;
+            }
 
-    return {
-      country,
-      street: parts[0] || "",
-      city: parts[1] || "",
-      state: parts[2] ? parts[2].split(" ")[0] : "",
-      zipCode: parts[2] ? parts[2].split(" ")[1] : "",
-      placeId,
-      address: googleAddress,
-    };
+            // extacts address components
+            const addressComponents = place.address_components;
+            const streetNumber = addressComponents.find((component) =>
+              component.types.includes("street_number")
+            )?.long_name;
+            const route = addressComponents.find((component) =>
+              component.types.includes("route")
+            )?.long_name;
+            const city = addressComponents.find((component) =>
+              component.types.includes("locality")
+            )?.long_name;
+            const state = addressComponents.find((component) =>
+              component.types.includes("administrative_area_level_1")
+            )?.long_name;
+            const zipCode = addressComponents.find((component) =>
+              component.types.includes("postal_code")
+            )?.long_name;
+
+            const street = [streetNumber, route].filter(Boolean).join(" ");
+
+            resolve({
+              country,
+              street,
+              city: city || "",
+              state: state || "",
+              zipCode: zipCode || "",
+              placeId,
+              address: place.formatted_address || googleAddress,
+              extraInfo: place.name || undefined,
+            });
+          }
+        );
+      });
+    } catch (error) {
+      console.error("Error al obtener detalles de la dirección:", error);
+      const parts = googleAddress.split(",").map((part) => part.trim());
+      return {
+        country,
+        street: parts[0] || "",
+        city: parts[1] || "",
+        state: parts[2] ? parts[2].split(" ")[0] : "",
+        zipCode: parts[2] ? parts[2].split(" ")[1] : "",
+        placeId,
+        address: googleAddress,
+      };
+    }
   };
 
-  // Manejador para cuando se selecciona una dirección de Google
-  const handleBillingAddressSelect = ({
+  // handler for google search
+  const handleBillingAddressSelect = async ({
     country,
     address,
     placeId,
@@ -103,12 +156,12 @@ export default function AddressManager({
     address: string;
     placeId: string;
   }) => {
-    const parsedAddress = parseGoogleAddress(address, placeId, country);
+    const parsedAddress = await parseGoogleAddress(address, placeId, country);
     setBillingAddress({ ...parsedAddress, sameAsShipping });
     setShowBillingSearch(false);
   };
 
-  const handleShippingAddressSelect = ({
+  const handleShippingAddressSelect = async ({
     country,
     address,
     placeId,
@@ -117,12 +170,12 @@ export default function AddressManager({
     address: string;
     placeId: string;
   }) => {
-    const parsedAddress = parseGoogleAddress(address, placeId, country);
+    const parsedAddress = await parseGoogleAddress(address, placeId, country);
     setShippingAddress(parsedAddress);
     setShowShippingSearch(false);
   };
 
-  // Manejadores para entrada manual
+  // handler for manual entry
   const handleBillingManualEntry = () => {
     setShowBillingSearch(false);
   };
@@ -131,12 +184,11 @@ export default function AddressManager({
     setShowShippingSearch(false);
   };
 
-  // Manejadores para guardar las formas
+  // handler for saving forms
   const handleBillingFormSave = async (formData: AddressData) => {
     setBillingAddress({ ...formData, sameAsShipping });
 
     if (sameAsShipping) {
-      // Si las direcciones son iguales, guardamos la misma para ambas
       await handleFinalSave(
         { ...formData, sameAsShipping: true },
         { ...formData }
@@ -147,13 +199,12 @@ export default function AddressManager({
   const handleShippingFormSave = async (formData: AddressData) => {
     setShippingAddress(formData);
 
-    // Si ya tenemos ambas direcciones, podemos guardar
     if (billingAddress.country && billingAddress.street) {
       await handleFinalSave(billingAddress, formData);
     }
   };
 
-  // Función para guardar ambas direcciones
+  // function for saving both addresses
   const handleFinalSave = async (
     billing: AddressData,
     shipping: AddressData
@@ -163,7 +214,6 @@ export default function AddressManager({
       if (onSave) {
         await onSave(billing, shipping);
       } else {
-        // Si no hay onSave, solo actualizamos el estado local
         setBillingAddress(billing);
         setShippingAddress(shipping);
       }
@@ -185,7 +235,6 @@ export default function AddressManager({
 
   return (
     <div className={cn("w-full space-y-6", className)}>
-      {/* Sección de facturación */}
       <div className="w-full">
         {showBillingSearch ? (
           <AddressSearch
@@ -208,7 +257,6 @@ export default function AddressManager({
         )}
       </div>
 
-      {/* Sección de envío (solo se muestra si sameAsShipping es false) */}
       {!sameAsShipping && (
         <div className="w-full">
           {showShippingSearch ? (
