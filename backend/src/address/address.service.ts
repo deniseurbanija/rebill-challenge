@@ -21,35 +21,44 @@ export class AddressService {
   async saveAddress(
     addressData: SaveAddressesDto,
   ): Promise<SaveAddressResponse> {
-    const billingAddress = this.addressRepository.create({
-      ...addressData.billingAddress,
-      type: 'billing',
-    });
-    await this.addressRepository.save(billingAddress);
+    // Verificar si las direcciones son idénticas
+    const areAddressesIdentical =
+      addressData.sameAsShipping ||
+      (addressData.billingAddress &&
+        addressData.shippingAddress &&
+        JSON.stringify(addressData.billingAddress) ===
+          JSON.stringify(addressData.shippingAddress));
 
-    let shippingAddress: Address | null = null;
-
-    if (addressData.sameAsShipping) {
-      // use the same info as billing
-      shippingAddress = this.addressRepository.create({
+    if (areAddressesIdentical) {
+      // Si son idénticas, guarda solo una dirección con tipo combinado
+      const combinedAddress = this.addressRepository.create({
         ...addressData.billingAddress,
-        type: 'shipping',
+        type: 'billing-shipping',
         sameAsBilling: true,
       });
+      await this.addressRepository.save(combinedAddress);
+
+      return {
+        billingAddress: combinedAddress,
+        shippingAddress: combinedAddress,
+      };
     } else {
-      // use the different info
-      shippingAddress = this.addressRepository.create({
+      // Si son diferentes, guarda ambas direcciones
+      const billingAddress = this.addressRepository.create({
+        ...addressData.billingAddress,
+        type: 'billing',
+      });
+      await this.addressRepository.save(billingAddress);
+
+      const shippingAddress = this.addressRepository.create({
         ...addressData.shippingAddress,
         type: 'shipping',
         sameAsBilling: false,
       });
-    }
-
-    if (shippingAddress) {
       await this.addressRepository.save(shippingAddress);
-    }
 
-    return { billingAddress, shippingAddress };
+      return { billingAddress, shippingAddress };
+    }
   }
 
   async getAddresses(): Promise<Address[]> {

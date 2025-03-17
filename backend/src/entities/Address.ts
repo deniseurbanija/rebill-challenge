@@ -21,10 +21,10 @@ export class Address {
   zipCode: string;
 
   @Column({ nullable: true })
-  apartment: string;
+  extraInfo: string;
 
   @Column()
-  type: 'billing' | 'shipping';
+  type: 'billing' | 'shipping' | 'billing-shipping';
 
   @Column({ default: false })
   sameAsBilling: boolean;

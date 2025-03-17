@@ -30,7 +30,7 @@ export class AddressDto {
 
   @IsString()
   @IsOptional()
-  apartment?: string;
+  extraInfo?: string;
 }
 
 export class SaveAddressesDto {

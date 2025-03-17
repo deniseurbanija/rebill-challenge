@@ -22,6 +22,7 @@ import { AddressModule } from './address/address.module';
         database: configService.get<string>('DB_NAME'),
         entities: [Address],
         synchronize: true,
+        dropSchema: true,
       }),
     }),
     AddressModule,
