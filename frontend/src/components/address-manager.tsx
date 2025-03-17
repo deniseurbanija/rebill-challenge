@@ -10,7 +10,7 @@ interface AddressData {
   city?: string;
   state?: string;
   zipCode?: string;
-  apartment?: string;
+  extraInfo?: string;
   placeId?: string;
   address?: string;
   sameAsShipping?: boolean;
@@ -50,7 +50,7 @@ export default function AddressManager({
     }
   );
 
-  // Estado para controlar si las direcciones son iguales
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [sameAsShipping, setSameAsShipping] = useState(
     initialBillingAddress?.sameAsShipping !== false
   );
@@ -174,20 +174,6 @@ export default function AddressManager({
     }
   };
 
-  // Manejador para el cambio de "Same as Shipping"
-  const handleSameAsShippingChange = (checked: boolean) => {
-    setSameAsShipping(checked);
-    setBillingAddress((prev) => ({ ...prev, sameAsShipping: checked }));
-
-    if (checked && !showBillingSearch) {
-      // Si marcamos la opción y ya teníamos un formulario de facturación completo
-      handleFinalSave(
-        { ...billingAddress, sameAsShipping: true },
-        billingAddress
-      );
-    }
-  };
-
   return (
     <div className={cn("w-full space-y-6", className)}>
       {/* Sección de facturación */}
@@ -198,7 +184,6 @@ export default function AddressManager({
             showSameAsShipping={true}
             onAddressSelect={handleBillingAddressSelect}
             onManualEntry={handleBillingManualEntry}
-            onSameAsShippingChange={handleSameAsShippingChange}
             sameAsShipping={sameAsShipping}
           />
         ) : (
@@ -207,7 +192,6 @@ export default function AddressManager({
             showSameAsShipping={true}
             initialAddress={billingAddress}
             onSave={handleBillingFormSave}
-            onSameAsShippingChange={handleSameAsShippingChange}
             isSubmitting={isSubmitting}
           />
         )}

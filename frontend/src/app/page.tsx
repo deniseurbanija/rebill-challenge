@@ -3,6 +3,8 @@ import AddressManager from "@/components/address-manager";
 import type { AddressData } from "@/types/address";
 import { toast } from "sonner";
 import axios from "axios";
+import { NavigationBar } from "@/components/navigation-bar";
+import { AddressSelector } from "@/components/address-selector";
 
 const api_url = "http://localhost:3000/addresses";
 export default function Home() {
@@ -13,8 +15,8 @@ export default function Home() {
     try {
       const payload = {
         billingAddress: billingData,
-        shippingAddress: shippingData || undefined, // Solo lo envía si existe
-        sameAsShipping: !shippingData, // true si no hay shippingData
+        shippingAddress: shippingData,
+        sameAsShipping: !shippingData,
       };
 
       const response = await axios.post(api_url, payload);
@@ -28,10 +30,13 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center md:p-24">
+    <main className="flex min-h-screen flex-col items-center justify-center md:p-24 ">
       <div>
         <AddressManager onSave={handleSave} />
       </div>
+      {/* Estos componentes se renderizan condicionalmente basados en el estado de Redux */}
+      <NavigationBar />
+      <AddressSelector />
     </main>
   );
 }

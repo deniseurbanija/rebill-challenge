@@ -39,12 +39,12 @@ export default function AddressForm({
     city: initialAddress?.city || "",
     state: initialAddress?.state || "",
     zipCode: initialAddress?.zipCode || "",
-    apartment: initialAddress?.apartment || "",
+    extraInfo: initialAddress?.extraInfo || "",
     sameAsShipping: initialAddress?.sameAsShipping || false,
   });
 
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [moreDetails, setMoreDetails] = useState(!!initialAddress?.apartment);
+  const [moreDetails, setMoreDetails] = useState(!!initialAddress?.extraInfo);
   const [countryValidation, setCountryValidation] = useState(
     getCountryValidation(formData.country)
   );
@@ -250,9 +250,9 @@ export default function AddressForm({
         <div>
           {moreDetails ? (
             <Input
-              id="apartment"
-              name="apartment"
-              value={formData.apartment}
+              id="extraInfo"
+              name="extraInfo"
+              value={formData.extraInfo}
               placeholder="Apartment, Unit, Floor (optional)"
               onChange={handleInputChange}
               className="mt-1"

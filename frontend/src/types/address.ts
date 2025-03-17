@@ -4,7 +4,7 @@ export interface AddressData {
   city?: string;
   state?: string;
   zipCode?: string;
-  apartment?: string;
+  extraInfo?: string;
   placeId?: string;
   address?: string;
   sameAsShipping?: boolean;
@@ -39,7 +39,7 @@ export interface AddressFormData extends AddressData {
   city: string;
   state: string;
   zipCode: string;
-  apartment?: string;
+  extraInfo?: string;
 }
 
 export interface CountryValidation {

@@ -1,33 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { NavigationBar } from "./navigation-bar";
-
-interface Address {
-  street: string;
-  number: string;
-  city: string;
-  country: string;
-}
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { fetchAddresses, selectAddress } from "@/redux/addressSlice";
 
 export function AddressSelector() {
-  const [expanded, setExpanded] = useState(false);
+  const dispatch = useAppDispatch();
+  const { addresses, isLoading, error, showAddressSelector } = useAppSelector(
+    (state) => state.address
+  );
 
-  const addresses: Address[] = [
-    {
-      street: "El Salvador",
-      number: "5218",
-      city: "Cdad. Autónoma de Buenos Aires",
-      country: "Argentina",
-    },
-    {
-      street: "El Salvador",
-      number: "5312",
-      city: "Cdad. Autónoma de Buenos Aires",
-      country: "Argentina",
-    },
-    // Additional addresses would go here to make up the 5 results
-  ];
+  useEffect(() => {
+    dispatch(fetchAddresses());
+  }, [dispatch]);
+
+  if (!showAddressSelector) return null;
+
+  // Renderizar un mensaje de carga o error si es necesario
+  if (isLoading)
+    return <div className="loading-indicator">Cargando direcciones...</div>;
+  if (error) return <div className="error-message">Error: {error}</div>;
 
   return (
     <div className="bg-white rounded-3xl shadow-md overflow-hidden max-w-xl w-full">
@@ -36,14 +28,17 @@ export function AddressSelector() {
           <h2 className="text-lg font-medium text-gray-900">
             Select a saved address
           </h2>
-          <span className="text-sm text-gray-500">5 results</span>
+          <span className="text-sm text-gray-500">
+            {addresses.length} results
+          </span>
         </div>
 
         <div className="space-y-4 max-h-80 overflow-y-auto">
-          {addresses.map((address, index) => (
+          {addresses.map((address) => (
             <div
-              key={index}
+              key={address.id}
               className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+              onClick={() => dispatch(selectAddress(address))}
             >
               <div className="font-medium">
                 {address.street} {address.number}
@@ -54,14 +49,6 @@ export function AddressSelector() {
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="border-t border-gray-200 p-4">
-        <NavigationBar
-          expanded={expanded}
-          onToggle={() => setExpanded(!expanded)}
-          onClose={() => console.log("Close clicked")}
-        />
       </div>
     </div>
   );

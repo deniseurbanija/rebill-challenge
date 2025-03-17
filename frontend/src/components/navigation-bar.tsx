@@ -10,19 +10,21 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-// import { AddressSelector } from "./address-selector";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import {
+  toggleAddressSelector,
+  closeAddressSelector,
+} from "@/redux/addressSlice";
 
-interface NavigationBarProps {
-  expanded?: boolean;
-  onToggle?: () => void;
-  onClose?: () => void;
-}
+export function NavigationBar() {
+  const dispatch = useAppDispatch();
+  const { addresses, showAddressSelector } = useAppSelector(
+    (state) => state.address
+  );
 
-export function NavigationBar({
-  expanded = true,
-  onToggle,
-  onClose,
-}: NavigationBarProps) {
+  // Solo mostrar si hay direcciones guardadas
+  if (addresses.length === 0) return null;
+
   return (
     <div className="bg-white rounded-full flex items-center justify-between px-4 py-2 shadow-sm">
       <div className="flex items-center gap-4">
@@ -34,13 +36,11 @@ export function NavigationBar({
         <Button
           variant="ghost"
           className="flex items-center gap-1 px-1 hover:bg-transparent hover:text-blue-600"
-          onClick={onToggle}
+          onClick={() => dispatch(toggleAddressSelector())}
         >
           Addresses
-          {expanded ? (
-            <div>
-              <ChevronUp className="h-4 w-4 text-gray-500" />
-            </div>
+          {showAddressSelector ? (
+            <ChevronUp className="h-4 w-4 text-gray-500" />
           ) : (
             <ChevronDown className="h-4 w-4 text-gray-500" />
           )}
@@ -74,7 +74,7 @@ export function NavigationBar({
           variant="ghost"
           size="icon"
           className="rounded-full h-8 w-8"
-          onClick={onClose}
+          onClick={() => dispatch(closeAddressSelector())}
         >
           <X className="h-4 w-4" />
         </Button>
