@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('addresses')
 export class Address {
   @PrimaryGeneratedColumn()
   id: number;
@@ -8,21 +8,24 @@ export class Address {
   @Column()
   country: string;
 
-  @Column({ nullable: true })
-  state?: string; // Opcional, algunos países no tienen estados
+  @Column()
+  street: string;
+
+  @Column()
+  city: string;
+
+  @Column()
+  state: string;
+
+  @Column()
+  zipCode: string;
 
   @Column({ nullable: true })
-  city?: string;
+  apartment: string;
 
-  @Column({ nullable: true })
-  postalCode?: string;
+  @Column()
+  type: 'billing' | 'shipping';
 
-  @Column({ nullable: true })
-  street?: string;
-
-  @Column({ nullable: true })
-  streetNumber?: string;
-
-  @Column({ nullable: true })
-  neighborhood?: string;
+  @Column({ default: false })
+  sameAsBilling: boolean;
 }

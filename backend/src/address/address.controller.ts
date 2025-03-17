@@ -6,32 +6,23 @@ import {
   Delete,
   Param,
   Body,
-  UsePipes,
-  ValidationPipe,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
 import { AddressService } from './address.service';
-import { CreateAddressDto } from './dto/create-address.dto';
+import { SaveAddressesDto } from './dto/address.dto';
 import { Address } from 'src/entities/Address';
+import { SaveAddressResponse } from './types/address.types';
 
 @Controller('addresses')
 export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe({ whitelist: true })) //The ValidationPipe ensures DTOs are correctly formatted
-  async createAddress(
-    @Body() createAddressDto: CreateAddressDto,
-  ): Promise<Address> {
-    try {
-      return await this.addressService.createAddress(createAddressDto);
-    } catch (error) {
-      throw new HttpException(
-        error.message,
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+  async saveAddress(
+    @Body() addressData: SaveAddressesDto,
+  ): Promise<SaveAddressResponse> {
+    return this.addressService.saveAddress(addressData);
   }
 
   @Get()

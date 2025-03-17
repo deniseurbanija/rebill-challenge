@@ -8,7 +8,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Address } from 'src/entities/Address';
-import { CreateAddressDto } from './dto/create-address.dto';
+import { SaveAddressesDto } from './dto/address.dto';
+import { SaveAddressResponse } from './types/address.types';
 
 @Injectable()
 export class AddressService {
@@ -17,13 +18,38 @@ export class AddressService {
     private readonly addressRepository: Repository<Address>,
   ) {}
 
-  async createAddress(createAddressDto: CreateAddressDto): Promise<Address> {
-    try {
-      const address = this.addressRepository.create(createAddressDto);
-      return await this.addressRepository.save(address);
-    } catch (error) {
-      throw new InternalServerErrorException('Error saving the address.');
+  async saveAddress(
+    addressData: SaveAddressesDto,
+  ): Promise<SaveAddressResponse> {
+    const billingAddress = this.addressRepository.create({
+      ...addressData.billingAddress,
+      type: 'billing',
+    });
+    await this.addressRepository.save(billingAddress);
+
+    let shippingAddress: Address | null = null;
+
+    if (addressData.sameAsShipping) {
+      // use the same info as billing
+      shippingAddress = this.addressRepository.create({
+        ...addressData.billingAddress,
+        type: 'shipping',
+        sameAsBilling: true,
+      });
+    } else {
+      // use the different info
+      shippingAddress = this.addressRepository.create({
+        ...addressData.shippingAddress,
+        type: 'shipping',
+        sameAsBilling: false,
+      });
     }
+
+    if (shippingAddress) {
+      await this.addressRepository.save(shippingAddress);
+    }
+
+    return { billingAddress, shippingAddress };
   }
 
   async getAddresses(): Promise<Address[]> {
