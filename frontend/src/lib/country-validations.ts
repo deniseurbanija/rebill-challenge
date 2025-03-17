@@ -2,7 +2,7 @@ import type { CountryValidation } from "@/types/address";
 
 export const countryValidations: Record<string, CountryValidation> = {
   AR: {
-    zipCodePattern: /^\d{4}$/,
+    zipCodePattern: /^\d{5}$/,
     zipCodeExample: "1414",
     hasStates: true,
     states: [

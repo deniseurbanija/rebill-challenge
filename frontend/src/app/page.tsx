@@ -3,6 +3,7 @@ import AddressManager from "@/components/address-manager";
 import type { AddressData } from "@/types/address";
 import { toast } from "sonner";
 import axios from "axios";
+import { TestModeButton } from "@/components/test-mode-button";
 import { NavigationBar } from "@/components/navigation-bar";
 import { AddressSelector } from "@/components/address-selector";
 
@@ -34,7 +35,8 @@ export default function Home() {
       <div>
         <AddressManager onSave={handleSave} />
       </div>
-      {/* Estos componentes se renderizan condicionalmente basados en el estado de Redux */}
+      <TestModeButton />
+
       <NavigationBar />
       <AddressSelector />
     </main>
