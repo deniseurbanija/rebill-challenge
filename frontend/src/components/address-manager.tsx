@@ -189,9 +189,9 @@ export default function AddressManager({
   };
 
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn("w-full space-y-6", className)}>
       {/* Sección de facturación */}
-      <div>
+      <div className="w-full">
         {showBillingSearch ? (
           <AddressSearch
             title="Billing address"
@@ -215,7 +215,7 @@ export default function AddressManager({
 
       {/* Sección de envío (solo se muestra si sameAsShipping es false) */}
       {!sameAsShipping && (
-        <div>
+        <div className="w-full">
           {showShippingSearch ? (
             <AddressSearch
               title="Shipping address"

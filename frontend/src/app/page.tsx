@@ -8,7 +8,7 @@ export default function Home() {
     billingData: AddressData,
     shippingData?: AddressData
   ) => {
-    toast("Address has been registered successfully");
+    toast.success("Address has been registered successfully");
     console.log("Billing address:", billingData);
     if (shippingData) {
       console.log("Shipping address:", shippingData);
