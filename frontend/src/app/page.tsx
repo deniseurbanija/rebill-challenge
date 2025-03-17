@@ -2,16 +2,28 @@
 import AddressManager from "@/components/address-manager";
 import type { AddressData } from "@/types/address";
 import { toast } from "sonner";
+import axios from "axios";
 
+const api_url = "http://localhost:3000/addresses";
 export default function Home() {
   const handleSave = async (
     billingData: AddressData,
     shippingData?: AddressData
   ) => {
-    toast.success("Address has been registered successfully");
-    console.log("Billing address:", billingData);
-    if (shippingData) {
-      console.log("Shipping address:", shippingData);
+    try {
+      const payload = {
+        billingAddress: billingData,
+        shippingAddress: shippingData || undefined, // Solo lo envía si existe
+        sameAsShipping: !shippingData, // true si no hay shippingData
+      };
+
+      const response = await axios.post(api_url, payload);
+
+      console.log("API RESPONSE ", response.data);
+      toast.success("Address has been registered successfully");
+    } catch (error) {
+      console.error("Error saving address:", error);
+      toast.error("Failed to save address");
     }
   };
 
