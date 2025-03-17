@@ -16,7 +16,6 @@ import {
   getCountryValidation,
   validateAddressForm,
 } from "@/lib/country-validations";
-import { saveAddress } from "@/lib/address-service";
 import type {
   AddressFormProps,
   AddressFormData,
@@ -30,6 +29,8 @@ export default function AddressForm({
   showSameAsShipping = true,
   initialAddress,
   onSave,
+  onSameAsShippingChange,
+  isSubmitting = false,
   className,
 }: AddressFormProps) {
   const [formData, setFormData] = useState<AddressFormData>({
@@ -43,8 +44,7 @@ export default function AddressForm({
   });
 
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [moreDetails, setMoreDetails] = useState(false);
+  const [moreDetails, setMoreDetails] = useState(!!initialAddress?.apartment);
   const [countryValidation, setCountryValidation] = useState(
     getCountryValidation(formData.country)
   );
@@ -63,7 +63,6 @@ export default function AddressForm({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear error for this field when user types
     if (errors[name as keyof ValidationErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -80,6 +79,10 @@ export default function AddressForm({
 
   const handleSameAsShippingChange = (checked: boolean) => {
     setFormData((prev) => ({ ...prev, sameAsShipping: checked }));
+
+    if (onSameAsShippingChange) {
+      onSameAsShippingChange(checked);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,25 +106,10 @@ export default function AddressForm({
 
     // Clear errors
     setErrors({});
-    // Submit form
-    setIsSubmitting(true);
 
-    try {
-      // Call the API to save the address
-      const result = await saveAddress(formData);
-
-      // Call the onSave callback if provided
-      if (onSave) {
-        await onSave(formData);
-      }
-
-      // You could show a success message here
-      console.log("Address saved:", result);
-    } catch (error) {
-      console.error("Error saving address:", error);
-      // You could show an error message here
-    } finally {
-      setIsSubmitting(false);
+    // Call the onSave callback if provided
+    if (onSave) {
+      await onSave(formData);
     }
   };
 
@@ -222,7 +210,6 @@ export default function AddressForm({
             </div>
           ) : (
             <div>
-              <label htmlFor="state" className="text-sm text-gray-500"></label>
               <Input
                 placeholder={`${countryValidation.stateLabel}*`}
                 id="state"
@@ -271,7 +258,12 @@ export default function AddressForm({
               className="mt-1"
             />
           ) : (
-            <Button variant="link" onClick={() => setMoreDetails(true)}>
+            <Button
+              type="button"
+              variant="link"
+              className="p-0 h-auto text-sm text-[#3B4049]"
+              onClick={() => setMoreDetails(true)}
+            >
               + Add additional information
             </Button>
           )}
@@ -279,8 +271,8 @@ export default function AddressForm({
 
         <Button
           type="submit"
-          disabled={isSubmitting || Object.keys(errors).length > 0}
-          className="w-full bg-black hover:bg-gray-800 text-white rounded-md h-9 mt-6"
+          disabled={isSubmitting}
+          className="w-full bg-black hover:bg-gray-800 text-white rounded-md h-9 mt-6 cursor-pointer"
         >
           {isSubmitting ? "Saving..." : "Save changes"}
         </Button>

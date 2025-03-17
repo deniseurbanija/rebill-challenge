@@ -23,14 +23,15 @@ export function AddressSearch({
   title = "Billing address",
   showSameAsShipping = true,
   onAddressSelect,
+  onManualEntry,
+  onSameAsShippingChange,
+  sameAsShipping = false,
   className,
 }: AddressSearchProps) {
   const [country, setCountry] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
-  const [sameAsShipping, setSameAsShipping] = useState(false);
   const [touched, setTouched] = useState(false);
-  const [manualEntry, setManualEntry] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -73,15 +74,10 @@ export function AddressSearch({
   };
 
   const handleManualEntry = () => {
-    setManualEntry(true);
     clearPredictions();
-
-    // Focus the input after switching to manual mode
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 0);
+    if (onManualEntry) {
+      onManualEntry();
+    }
   };
 
   const handleCountryChange = (value: string) => {
@@ -92,7 +88,9 @@ export function AddressSearch({
   };
 
   const handleSameAsShippingChange = (checked: boolean) => {
-    setSameAsShipping(checked);
+    if (onSameAsShippingChange) {
+      onSameAsShippingChange(checked);
+    }
   };
 
   const isValid = !touched || sameAsShipping || (country && selectedAddress);
@@ -153,7 +151,7 @@ export function AddressSearch({
             </div>
           </div>
 
-          {predictions.length > 0 && !manualEntry && (
+          {predictions.length > 0 && (
             <div className="absolute z-10 w-full mt-1 bg-background border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
               {predictions.map((prediction) => (
                 <div
@@ -171,20 +169,14 @@ export function AddressSearch({
           )}
         </div>
 
-        {!manualEntry && (
-          <Button
-            variant="link"
-            className="p-0 h-auto mt-4 text-sm text-[#3B4049]"
-            onClick={handleManualEntry}
-          >
-            Enter address manually
-          </Button>
-        )}
+        <Button
+          variant="link"
+          className="p-0 h-auto mt-4 text-sm text-[#3B4049]"
+          onClick={handleManualEntry}
+        >
+          Enter address manually
+        </Button>
       </div>
-      <Button
-        type="submit"
-        className="w-full bg-black hover:bg-gray-800 text-white rounded-md h-9 mt-6"
-      ></Button>
     </div>
   );
 }

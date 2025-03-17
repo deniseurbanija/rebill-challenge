@@ -1,17 +1,22 @@
 "use client";
-// import AddressForm from "@/components/address-form";
-import { AddressSearch } from "@/components/address-search";
+import AddressManager from "@/components/address-manager";
+import type { AddressData } from "@/types/address";
 
 export default function Home() {
+  const handleSave = async (
+    billingData: AddressData,
+    shippingData?: AddressData
+  ) => {
+    console.log("Billing address:", billingData);
+    if (shippingData) {
+      console.log("Shipping address:", shippingData);
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center md:p-24">
       <div>
-        <AddressSearch
-          onAddressSelect={(address) => {
-            console.log("Selected address (API):", address);
-          }}
-        />
-        {/* <AddressForm /> */}
+        <AddressManager onSave={handleSave} />
       </div>
     </main>
   );
