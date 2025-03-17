@@ -1,9 +1,8 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useRef } from "react";
-import { Check, Info, Search } from "lucide-react";
+import { Check, Search } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -11,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,6 +17,7 @@ import { useGooglePlacesAutocomplete } from "@/hooks/use-google-places-autocompl
 import type { AddressSearchProps } from "@/types/address";
 import { countriesData } from "@/data/countries-data";
 import { FormattedCountry } from "@/types/country";
+import { AddressFormHeader } from "@/components/address-form-header";
 
 export function AddressSearch({
   title = "Billing address",
@@ -100,27 +99,12 @@ export function AddressSearch({
 
   return (
     <div className={cn("w-96 p-4 space-y-4", className)}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1">
-          <h3 className="text-sm text-[#3B4049]">{title}</h3>
-          <Info className="h-4 w-4 text-muted-foreground cursor-help opacity-50" />
-        </div>
-        {showSameAsShipping && (
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="sameAsShipping"
-              checked={sameAsShipping}
-              onCheckedChange={handleSameAsShippingChange}
-            />
-            <label
-              htmlFor="sameAsShipping"
-              className="text-sm text-[#3B4049] cursor-pointer"
-            >
-              Same as shipping
-            </label>
-          </div>
-        )}
-      </div>
+      <AddressFormHeader
+        title={title}
+        showSameAsShipping={showSameAsShipping}
+        sameAsShipping={sameAsShipping}
+        onSameAsShippingChange={handleSameAsShippingChange}
+      />
 
       <div className="space-y-4">
         <Select

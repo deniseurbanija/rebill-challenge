@@ -1,9 +1,7 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useEffect } from "react";
-import { Info } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -11,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,6 +23,7 @@ import type {
   ValidationErrors,
 } from "@/types/address";
 import { countriesData } from "@/data/countries-data";
+import { AddressFormHeader } from "@/components/address-form-header";
 
 export default function AddressForm({
   title = "Billing address",
@@ -128,29 +126,16 @@ export default function AddressForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className={cn("w-96 space-y-4", className)}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1">
-          <h3 className="text-sm text-[#3B4049]">{title}</h3>
-          <Info className="h-4 w-4 text-muted-foreground cursor-help opacity-50" />
-        </div>
-        {showSameAsShipping && (
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="sameAsShipping"
-              checked={formData.sameAsShipping}
-              onCheckedChange={handleSameAsShippingChange}
-              className="h-4 w-4 border-[#EBEDEF] data-[state=checked]:bg-blue-600"
-            />
-            <label
-              htmlFor="sameAsShipping"
-              className="text-sm text-[#3B4049] cursor-pointer"
-            >
-              Same as shipping
-            </label>
-          </div>
-        )}
-      </div>
+    <form
+      onSubmit={handleSubmit}
+      className={cn("w-96 p-4 space-y-4", className)}
+    >
+      <AddressFormHeader
+        title={title}
+        showSameAsShipping={showSameAsShipping}
+        sameAsShipping={formData.sameAsShipping}
+        onSameAsShippingChange={handleSameAsShippingChange}
+      />
 
       <div className="space-y-4">
         <Select
