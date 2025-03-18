@@ -92,6 +92,8 @@ frontend/
 │   ├── hooks/         # Custom React hooks
 │   ├── services/      # API and external service integrations
 │   ├── types/         # TypeScript type definitions
+│   ├── redux/         # Redux components
+│   ├── data/         # folder with the countries data file
 │   ├── utils/         # Utility functions
 │   └── App.tsx        # Main application component
 ```
@@ -106,3 +108,6 @@ backend/
 │   ├── app.module.ts
 │   └── main.ts        # Application entry point
 ```
+
+## Reflexion
+🔗 [Reflexión y mejoras futuras - Google Docs](https://docs.google.com/document/d/1xMh_CFvQ6fg6DMZE8ZSLOYSRKatJ5aFt1P6SbGS5Mrg/edit?usp=sharing)
