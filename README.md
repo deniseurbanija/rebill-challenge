@@ -65,7 +65,7 @@ NODE_ENV=development
 - **Framework**: React with TypeScript
 - **UI Library**: Shadcn/ui
 - **State Management**: Redux
-- **Maps Integration**: Google Maps JavaScript API
+- **Maps Integration**: Google Maps Places API
 - **Styling**: Tailwind CSS
 
 ### Backend
