@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils"; // Asumiendo que usas esta utilidad
 import { AddressSearch } from "./address-search";
 import AddressForm from "./address-form";
+import { useAppSelector } from "@/redux/hooks";
 
 interface AddressData {
   country: string;
@@ -36,6 +37,9 @@ export default function AddressManager({
   const [showBillingSearch, setShowBillingSearch] = useState(true);
   const [showShippingSearch, setShowShippingSearch] = useState(true);
 
+  // Get selected address from redux store
+  const { selectedAddress } = useAppSelector((state) => state.address);
+
   // states to storage the addresses
   const [billingAddress, setBillingAddress] = useState<AddressData>(
     initialBillingAddress || {
@@ -56,6 +60,14 @@ export default function AddressManager({
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Effect to handle selected address from AddressSelector
+  useEffect(() => {
+    if (selectedAddress) {
+      setBillingAddress({ ...selectedAddress, sameAsShipping });
+      setShowBillingSearch(false);
+    }
+  }, [selectedAddress, sameAsShipping]);
 
   // updates states when sameAsShipping changes
   useEffect(() => {

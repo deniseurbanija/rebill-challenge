@@ -5,11 +5,18 @@ import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/redux/hooks";
 import { motion, AnimatePresence } from "framer-motion";
 import { NavigationBar } from "./navigation-bar";
-import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 
-export function TestModeButton() {
+interface TestModeButtonProps {
+  showBar: boolean;
+  onShowBarChange: Dispatch<SetStateAction<boolean>>;
+}
+
+export function TestModeButton({
+  showBar,
+  onShowBarChange,
+}: TestModeButtonProps) {
   const { addresses } = useAppSelector((state) => state.address);
-  const [showBar, setShowBar] = useState(false);
 
   // Solo mostrar si hay direcciones guardadas
   if (addresses.length === 0) return null;
@@ -28,7 +35,7 @@ export function TestModeButton() {
           <Button
             variant="outline"
             className="bg-white hover:bg-gray-50 rounded-full flex items-center gap-2 px-4 py-2 h-auto shadow-md"
-            onClick={() => setShowBar(true)}
+            onClick={() => onShowBarChange(true)}
           >
             <AlertCircle className="h-5 w-5 text-white fill-amber-500" />
             <span className="font-medium text-xs">Test mode</span>
@@ -57,7 +64,7 @@ export function TestModeButton() {
           </Button>
         </motion.div>
       ) : (
-        <NavigationBar onClose={() => setShowBar(false)} />
+        <NavigationBar onClose={() => onShowBarChange(false)} />
       )}
     </AnimatePresence>
   );

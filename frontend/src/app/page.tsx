@@ -5,9 +5,13 @@ import { toast } from "sonner";
 import axios from "axios";
 import { TestModeButton } from "@/components/test-mode-button";
 import { AddressSelector } from "@/components/address-selector";
+import { useState } from "react";
 
-const api_url = "http://localhost:3000/addresses";
+const api_url = process.env.NEXT_LOCAL_API as string;
+
 export default function Home() {
+  const [showBar, setShowBar] = useState(false);
+
   const handleSave = async (
     billingData: AddressData,
     shippingData?: AddressData
@@ -29,13 +33,17 @@ export default function Home() {
     }
   };
 
+  const handleAddressSelect = () => {
+    setShowBar(false);
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center md:p-24 ">
       <div>
         <AddressManager onSave={handleSave} />
       </div>
-      <TestModeButton />
-      <AddressSelector />
+      <TestModeButton showBar={showBar} onShowBarChange={setShowBar} />
+      <AddressSelector onAddressSelect={handleAddressSelect} />
     </main>
   );
 }

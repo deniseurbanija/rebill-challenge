@@ -160,8 +160,6 @@ export function validateAddressForm(
 
     if (!data.zipCode || data.zipCode.trim() === "") {
       errors.zipCode = "Zip/Postal code is required";
-    } else if (!validation.zipCodePattern.test(data.zipCode)) {
-      errors.zipCode = `Invalid format. Example: ${validation.zipCodeExample}`;
     }
   }
 

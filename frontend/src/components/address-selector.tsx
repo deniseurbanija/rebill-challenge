@@ -10,7 +10,11 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
-export function AddressSelector() {
+interface AddressSelectorProps {
+  onAddressSelect?: () => void;
+}
+
+export function AddressSelector({ onAddressSelect }: AddressSelectorProps) {
   const dispatch = useAppDispatch();
   const { addresses, isLoading, error, showAddressSelector, selectedAddress } =
     useAppSelector((state) => state.address);
@@ -51,6 +55,9 @@ export function AddressSelector() {
   const handleSelectAddress = (address: (typeof addresses)[0]) => {
     dispatch(selectAddress(address));
     dispatch(closeAddressSelector());
+    if (onAddressSelect) {
+      onAddressSelect();
+    }
   };
 
   return (

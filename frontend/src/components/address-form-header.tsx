@@ -1,5 +1,11 @@
 import { Info } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface AddressFormHeaderProps {
   title: string;
@@ -20,11 +26,30 @@ export function AddressFormHeader({
     }
   };
 
+  const getTooltipText = () => {
+    if (title.toLowerCase().includes("billing")) {
+      return "This is the address associated with your card or payment method.";
+    }
+    if (title.toLowerCase().includes("shipping")) {
+      return "This is where your order will be delivered.";
+    }
+    return "";
+  };
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-1">
         <h3 className="text-sm text-[#3B4049]">{title}</h3>
-        <Info className="h-4 w-4 text-muted-foreground cursor-help opacity-50" />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-4 w-4 text-muted-foreground opacity-50 cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{getTooltipText()}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       {showSameAsShipping && (
         <div className="flex items-center gap-2">
