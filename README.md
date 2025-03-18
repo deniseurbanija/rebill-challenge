@@ -19,9 +19,11 @@ The application will be available at:
 
 ## 📋 Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js (v20 or higher)
 - npm (v9 or higher)
+- Next.js (v15 or higher)
 - Google Maps API key
+- Docker
 
 ## 🛠️ Installation
 
@@ -55,7 +57,40 @@ Create a `.env` file in the `backend` directory:
 
 ```env
 PORT=8000
-NODE_ENV=development
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=your_postgres_user
+DB_PASSWORD=your_password_here
+DB_NAME=your_postgres_db
+```
+
+## ✨ Database Setup
+
+To quickly set up a PostgreSQL database, use Docker:
+```
+docker-compose up -d
+```
+
+Or if you don't have a `docker-compose.yml`, create one:
+```
+version: '3.8'
+
+services:
+  database:
+    image: postgres:15
+    container_name: rebill_challenge_db
+    restart: always
+    environment:
+      POSTGRES_USER: your_postgres_user
+      POSTGRES_PASSWORD: your_postgres_password
+      POSTGRES_DB: your_postgres_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
 ```
 
 ## 🏗️ Architecture
