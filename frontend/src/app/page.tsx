@@ -1,4 +1,5 @@
 "use client";
+
 import AddressManager from "@/components/address-manager";
 import type { AddressData } from "@/types/address";
 import { toast } from "sonner";
@@ -6,8 +7,6 @@ import axios from "axios";
 import { TestModeButton } from "@/components/test-mode-button";
 import { AddressSelector } from "@/components/address-selector";
 import { useState } from "react";
-
-const api_url = "http://localhost:3000/addresses";
 
 export default function Home() {
   const [showBar, setShowBar] = useState(false);
@@ -23,10 +22,16 @@ export default function Home() {
         sameAsShipping: !shippingData,
       };
 
-      const response = await axios.post(api_url, payload);
+      const response = await axios.post(
+        "http://localhost:8000/addresses",
+        payload
+      );
 
       console.log("API RESPONSE ", response.data);
       toast.success("Address has been registered successfully");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       console.error("Error saving address:", error);
       toast.error("Failed to save address");

@@ -4,6 +4,7 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { AddressData } from "@/types/address";
+import axios from "axios";
 
 interface AddressState {
   addresses: AddressData[];
@@ -28,12 +29,8 @@ export const fetchAddresses = createAsyncThunk(
   "address/fetchAddresses",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch("http://localhost:3000/addresses");
-      if (!response.ok) {
-        throw new Error("Error al obtener las direcciones");
-      }
-      const data = await response.json();
-      return data;
+      const response = await axios.get("http://localhost:8000/addresses");
+      return response.data;
     } catch (error) {
       return rejectWithValue((error as Error).message);
     }
