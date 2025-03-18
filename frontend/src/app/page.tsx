@@ -7,7 +7,7 @@ import { TestModeButton } from "@/components/test-mode-button";
 import { AddressSelector } from "@/components/address-selector";
 import { useState } from "react";
 
-const api_url = process.env.NEXT_LOCAL_API as string;
+const api_url = "http://localhost:3000/addresses";
 
 export default function Home() {
   const [showBar, setShowBar] = useState(false);
