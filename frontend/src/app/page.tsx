@@ -4,7 +4,6 @@ import type { AddressData } from "@/types/address";
 import { toast } from "sonner";
 import axios from "axios";
 import { TestModeButton } from "@/components/test-mode-button";
-import { NavigationBar } from "@/components/navigation-bar";
 import { AddressSelector } from "@/components/address-selector";
 
 const api_url = "http://localhost:3000/addresses";
@@ -36,8 +35,6 @@ export default function Home() {
         <AddressManager onSave={handleSave} />
       </div>
       <TestModeButton />
-
-      <NavigationBar />
       <AddressSelector />
     </main>
   );

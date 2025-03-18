@@ -11,30 +11,27 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  toggleAddressSelector,
-  closeAddressSelector,
-} from "@/redux/addressSlice";
+import { toggleAddressSelector } from "@/redux/addressSlice";
 import { motion } from "framer-motion";
 
-export function NavigationBar() {
-  const dispatch = useAppDispatch();
-  const { addresses, showAddressSelector } = useAppSelector(
-    (state) => state.address
-  );
+interface NavigationBarProps {
+  onClose: () => void;
+}
 
-  // Solo mostrar si hay direcciones guardadas
-  if (addresses.length === 0) return null;
+export function NavigationBar({ onClose }: NavigationBarProps) {
+  const dispatch = useAppDispatch();
+  const { showAddressSelector } = useAppSelector((state) => state.address);
 
   return (
     <motion.div
-      initial={{ width: "auto" }}
-      animate={{ width: "100%" }}
-      exit={{ width: "auto" }}
+      initial={{ width: "auto", scale: 0.9 }}
+      animate={{ width: "100%", scale: 1 }}
+      exit={{ width: "auto", scale: 0.9 }}
+      transition={{ duration: 0.2 }}
       className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-30 px-4"
     >
       <motion.div
-        className="bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-between shadow-md border border-gray-100 h-11 w-full max-w-4xl mx-auto"
+        className="bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-between shadow-md border border-gray-100 h-11 w-2xl max-w-4xl mx-auto"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
@@ -91,7 +88,7 @@ export function NavigationBar() {
             variant="ghost"
             size="icon"
             className="rounded-full h-8 w-8"
-            onClick={() => dispatch(closeAddressSelector())}
+            onClick={onClose}
           >
             <X className="h-4 w-4" />
           </Button>

@@ -126,7 +126,6 @@ export default function AddressManager({
               zipCode: zipCode || "",
               placeId,
               address: place.formatted_address || googleAddress,
-              extraInfo: place.name || undefined,
             });
           }
         );
