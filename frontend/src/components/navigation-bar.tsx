@@ -28,20 +28,33 @@ export function NavigationBar({ onClose }: NavigationBarProps) {
       animate={{ width: "100%", scale: 1 }}
       exit={{ width: "auto", scale: 0.9 }}
       transition={{ duration: 0.2 }}
-      className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-30 px-4"
+      className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-30 px-2 sm:px-4"
     >
       <motion.div
-        className="bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-between shadow-md border border-gray-100 h-11 w-2xl max-w-4xl mx-auto"
+        className="bg-white/95 backdrop-blur-sm rounded-full flex flex-col sm:flex-row items-center justify-between shadow-md border border-gray-100 min-h-[44px] w-full sm:w-2/3 lg:w-2xl mx-auto py-2 sm:py-0"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
       >
-        <div className="flex items-center gap-4 px-4">
+        <div className="flex items-center gap-2 sm:gap-4 px-2 sm:px-4 w-full sm:w-auto justify-between sm:justify-start">
           <div className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-white fill-amber-500" />
             <span className="font-medium text-xs">Test mode</span>
           </div>
 
+          <div className="flex items-center gap-2 sm:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full h-8 w-8"
+              onClick={onClose}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 sm:gap-4 px-2 sm:px-4 w-full sm:w-auto justify-center lg:justify-between mt-2 sm:mt-0">
           <Button
             variant="ghost"
             className="flex items-center text-xs gap-1 px-1 hover:bg-transparent hover:text-blue-600"
@@ -67,12 +80,12 @@ export function NavigationBar({ onClose }: NavigationBarProps) {
           >
             <Link href="https://docs.rebill.com/">
               <FileText className="h-4 w-4 text-gray-500" />
-              Docs
+              <span className="hidden sm:inline">Docs</span>
             </Link>
           </Button>
         </div>
 
-        <div className="flex items-center gap-2 px-4">
+        <div className="hidden sm:flex items-center gap-2 px-4">
           <Button
             variant="ghost"
             className="text-blue-600 text-xs hover:text-blue-700 hover:bg-transparent p-0 h-auto"
